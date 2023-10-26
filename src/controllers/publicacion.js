@@ -148,10 +148,50 @@ const obtenerPublicaciones = async(req, res) => {
     }
 }
 
+const eliminarPorFecha = async(req,res) => {
+    const { usuario_id } = req.params
+
+
+    try {
+        const publicaciones = await prisma.publicacion.findMany({
+            where: {
+                usuario_id: parseInt(usuario_id)
+            },
+            orderBy: {
+                fecha_creacion: 'desc'
+            },
+            include: {
+                comentario: true
+            }
+        })
+    
+        if(publicaciones.length === 0)
+            return res.status(404).json({msg: 'no hay publicaciones'})
+        
+        await prisma.comentario.deleteMany({
+            where: {
+                publicacion_id: parseInt(publicaciones[0].id)
+            }
+        })
+
+        await prisma.publicacion.delete({
+            where : {
+                id: parseInt(publicaciones[0].id)
+            }
+        })
+    
+        res.json({msg: "publicacion eliminada"})
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({msg: 'hubo un error', error})
+    }
+}
+
 export default { 
     obtenerPublicacion,
     crearPublicacion,
     editarPublicacion,
     eliminarPublicacion,
-    obtenerPublicaciones
+    obtenerPublicaciones,
+    eliminarPorFecha
  }
