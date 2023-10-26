@@ -9,6 +9,6 @@ router.get('/:id', usuariosController.getUsuario)
 router.post('/', usuariosController.crearUsuario)
 router.put('/:id', usuariosController.editarInformacion)
 router.delete('/:id', usuariosController.eliminarUsuario)
-
+router.get('/usuario/:email', usuariosController.buscarPorEmail)
 
 export default router

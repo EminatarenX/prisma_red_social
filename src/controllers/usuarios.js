@@ -75,11 +75,33 @@ const eliminarUsuario = async (req, res) => {
     return res.json("Usuario eliminado")
 }
 
+const buscarPorEmail = async(req, res) => {
+    const { email } = req.params
+
+    try {
+
+        const usuario = await prisma.usuario.findFirst({
+            where: {
+                email
+            }
+        })
+
+        if(!usuario) 
+            return res.status(404).json({msg: "no se encontro ningun usuario con ese email"})
+
+        return res.json(usuario)
+        
+    } catch (error) {
+        console.log(error)
+        return res.status(400).json({msg: 'error en el servidor', error})
+    }
+}
 
 export default { 
     getUsuario,
     getUsuarios,
     crearUsuario,
     editarInformacion,
-    eliminarUsuario
+    eliminarUsuario,
+    buscarPorEmail
 }
