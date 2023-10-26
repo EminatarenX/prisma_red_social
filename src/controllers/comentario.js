@@ -113,9 +113,32 @@ const editarComentario = async (req, res) => {
     }
 }
 
+const obtenerTodos = async(req, res) => {
+    const { publicacion_id } = req.query
+
+    try {
+        const comentarios = await prisma.comentario.findMany({
+            where: {
+                publicacion_id: parseInt(publicacion_id)
+            }
+        })
+    
+        if(!comentarios)
+            return res.status(404).json({msg: 'no hay comentarios'})
+    
+        return res.json(comentarios)
+    
+        
+        
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({msg: 'Hubo un error, intentalo despues', error})
+    }
+}
 export default { 
     obtenerComentario,
     comentar,
     eliminarComentario,
-    editarComentario
+    editarComentario,
+    obtenerTodos
  }
