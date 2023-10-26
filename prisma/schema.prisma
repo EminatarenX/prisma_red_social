@@ -1,0 +1,41 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model comentario {
+  id             Int         @id @default(autoincrement())
+  contenido      String      @db.VarChar(255)
+  fecha_creacion DateTime?   @default(now()) @db.Timestamp(0)
+  publicacion_id Int
+  usuario_id     Int
+  publicacion    publicacion @relation(fields: [publicacion_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "comentario_ibfk_1")
+  usuario        usuario     @relation(fields: [usuario_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "comentario_ibfk_2")
+
+  @@index([publicacion_id], map: "publicacion_id")
+  @@index([usuario_id], map: "usuario_id")
+}
+
+model publicacion {
+  id             Int          @id @default(autoincrement())
+  titulo         String?      @db.VarChar(255)
+  contenido      String?      @db.VarChar(255)
+  fecha_creacion DateTime?    @default(now()) @db.Timestamp(0)
+  usuario_id     Int
+  comentario     comentario[]
+  usuario        usuario      @relation(fields: [usuario_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "publicacion_ibfk_1")
+
+  @@index([usuario_id], map: "usuario_id")
+}
+
+model usuario {
+  nombre      String        @db.VarChar(55)
+  email       String        @db.VarChar(55)
+  id          Int           @id @default(autoincrement())
+  comentario  comentario[]
+  publicacion publicacion[]
+}
